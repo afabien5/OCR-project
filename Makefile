@@ -4,5 +4,5 @@ Programme : main.o neuro.o
 main.o : main.c neuro.c
 	gcc -c main.c -o main.o
 
-fonctions.o : neuro.c
+neuro.o : neuro.c
 	gcc -c fonctions.c -o fonctions.o  ions.c -o fonctions.o
