@@ -7,23 +7,22 @@ CC = gcc   -fsanitize=address
 # options for pre-processor (-I, -include, -D ... )
 CPPFLAGS = -MMD
 # main compilation options
-CFLAGS = -Wall -Wextra -std=c99
+CFLAGS = -Wall -Wextra -std=c99 -O0 -g
 # Linker options (probably always empty)
 LDFLAGS =
 # libs and path for linker
-LDLIBS =
-
-#built an .o for each file you need.
-main: neuro.o 
+LDLIBS = -lm
 
 #indicate source file and make a list
 
-SRC = neuro.c
-OBJ = ${SRC:.c=.o}
+OBJ = neuron.o
+DEP = ${OBJ:.o=.d} 
 
-all: main
+all: neuron
 
-main: ${OBJ}
+neuron: ${OBJ}
+
+.PHONY: clean
 
 clean:
 	${RM} *.d      # remove object files
