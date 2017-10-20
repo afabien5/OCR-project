@@ -1,5 +1,4 @@
-
-# include <stdio.h>
+#include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <math.h>
@@ -35,7 +34,7 @@ double signoid(double x) {
 
 
 double derivate(double x) {
-i	  return x * (1 - x);
+	  return x * (1 - x);
 }
 
 
@@ -47,9 +46,6 @@ double output(double input[], double weights[], double bias, size_t size) {
 	      return signoid(retour + bias);
 }
 
-int main (int argc, char *argv[])
-{
-  double res[];
-   
+int main (int argc, char *argv[]){  
 
 }	

@@ -1,8 +1,21 @@
-Programme : main.o neuro.o
-	gcc  main.o neuro.o -o Programme
+#OCR 2017/2018
+# Compilers and options
 
-main.o : main.c neuro.c
-	gcc -c main.c -o main.o
+CC=gcc
+CPPFLAGS= -MMD
+CFLAGS= -Wall -Wextra -std=c99 -pedantic -O2
+LDFLAGS=
+LDLIBS=
 
-neuro.o : neuro.c
-	gcc -c fonctions.c -o fonctions.o  ions.c -o fonctions.o
+SRC = neuro.c main.c
+OBJ = ${SRC:.c=.o}
+DEP = ${SRC:.c=.d}
+
+all: main
+
+main: ${OBJ}
+
+-include ${DEP}
+
+# END
+
