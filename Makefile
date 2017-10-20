@@ -15,10 +15,10 @@ LDLIBS = -lm
 
 #indicate source file and make a list
 
-OBJ = neuron.o
+OBJ = neuro.o
 DEP = ${OBJ:.o=.d} 
 
-all: neuron
+all: neuro
 
 neuron: ${OBJ}
 

@@ -88,7 +88,9 @@ double output(double input[], double weights[], double bias, size_t size) {
 }
 
 int main ()
-{  
+{ 
+       	printf("hello");
+/*	
 	Network r = network_init(2,2,1);
 	for(size_t i = 0 ; i<2 ; i++)
 	{
@@ -99,7 +101,7 @@ int main ()
 	
 		}
 		printf("\n");
-	}
+	}*/
 	return 0;
 
 }	
