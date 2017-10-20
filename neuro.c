@@ -4,7 +4,6 @@ include <stdio.h>
 # include <math.h>
 
 typedef struct neuron neuron;
-
 struct neuron {
 	size_t size;
 	double *weights;
