@@ -1,21 +1,35 @@
 #OCR 2017/2018
 # Compilers and options
 
-CC=gcc
-CPPFLAGS= -MMD
-CFLAGS= -Wall -Wextra -std=c99 -pedantic -O2
-LDFLAGS=
-LDLIBS=
+# Setting the compiler and the default linker program
 
-SRC = neuro.c main.c
+CC = gcc   -fsanitize=address
+# options for pre-processor (-I, -include, -D ... )
+CPPFLAGS = -MMD
+# main compilation options
+CFLAGS = -Wall -Wextra -std=c99
+# Linker options (probably always empty)
+LDFLAGS =
+# libs and path for linker
+LDLIBS =
+
+#built an .o for each file you need.
+main: neuro.o 
+
+#indicate source file and make a list
+
+SRC = neuro.c
 OBJ = ${SRC:.c=.o}
-DEP = ${SRC:.c=.d}
 
 all: main
 
 main: ${OBJ}
 
--include ${DEP}
+clean:
+	${RM} *.d      # remove object files
+	${RM} *.o      # remove object files
+	${RM} main     # remove main program
 
+-include ${DEP}
 # END
 
