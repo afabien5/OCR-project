@@ -2,12 +2,11 @@
 # include <stdlib.h>
 # include <string.h>
 # include <math.h>
-
+# include "matrix.h"
 typedef struct neuron neuron;
 struct neuron {
 	size_t size;
 	double *weights;
-	double *inputs;
 	double entree;
 	double sortie;
 	double bias;
@@ -29,7 +28,7 @@ struct Network
 neuron neuron_init(size_t size) {
 	  neuron n;
 	  n.weights = malloc(size * sizeof(double)); 
-	  n.inputs = malloc(size * sizeof(double));
+	 
 	  for (size_t i = 0; i < size; i++) {
 	   *(n.weights+i) = (double)rand()/(double)RAND_MAX;
 	  }  
@@ -78,6 +77,8 @@ double derivate(double x) {
 }
 
 
+
+
 double output(double input[], double weights[], double bias, size_t size) {
 	  double retour = 0;
 	    for(size_t i = 0; i < size; i++) {
@@ -86,6 +87,19 @@ double output(double input[], double weights[], double bias, size_t size) {
 	      return signoid(retour + bias);
 }
 
-int main (int argc, char *argv[]){  
+int main ()
+{  
+	Network r = network_init(2,2,1);
+	for(size_t i = 0 ; i<2 ; i++)
+	{
+		for(size_t j = 0 ; j<2; ++j)
+		{
+		printf("%lf ",*(r.v2[i].weights+j));
+
+	
+		}
+		printf("\n");
+	}
+	return 0;
 
 }	
