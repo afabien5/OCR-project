@@ -27,7 +27,9 @@ struct Network
    La fonction rand donne un nombre aleatoire, pour avoir un nombre en a et b cela doit etre sous la forme rand()/(double)RAND_MAX * (b-a) + a, or nous n'avons pas de a et b, la valeur est entre 0 et 1.
 */
 neuron neuron_init(size_t size) {
-	  struct neuron n; 
+	  struct neuron n;
+	  n.entree = 0;
+	  n.sortie = 0;
 	  double b[size * sizeof(double)];
 	  n.weights =b;
 	  printf("ok\n");
