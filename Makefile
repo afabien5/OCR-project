@@ -17,7 +17,7 @@ main: ${OBJ}
 .PHONY: clean
 
 clean:
-	${RM} ${OBJ} ${DEP} *~
+	${RM} ${OBJ} ${DEP} *~ *.d
 	${RM} main
  
 -include ${DEP}
