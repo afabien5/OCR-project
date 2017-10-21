@@ -2,6 +2,7 @@
 # include <SDL_image.h>
 # include "pixel_operations.h"
 # include <err.h>
+# include "neuro.c"
 
 void wait_for_keypressed(void) {
   SDL_Event             event;
@@ -119,6 +120,16 @@ for (int y = 0; y < image->h; y++)
   //wait_for_keypressed();
 
   SDL_FreeSurface(image);
+
+  Network re = network_init(2,2,1); 
+  for(size_t i = 0 ; i > 2 ; i++)
+  {
+	  for(size_t j = 0 ; j<2; ++j)
+	  {
+		  printf("%lf ",*(re.v2[i].weights+j));
+	  }
+	  printf("\n");
+  }
   return 0;
 }
                                      

@@ -104,10 +104,10 @@ double output(double input[], double weights[], double bias, size_t size) {
 	      return signoid(retour + bias);
 }
 
-int main ()
-{ 	
-	Network r = network_init(2,2,1);
-/*
+//int main ()
+//{ 	
+/*	Network r = network_init(2,2,1);
+
 	for(size_t i = 0 ; i<2 ; i++)
 	{
 		for(size_t j = 0 ; j<2; ++j)
@@ -119,5 +119,5 @@ int main ()
 		printf("\n");
 	}
 	return 0;
-  */     
-}	
+  */   
+//}	
