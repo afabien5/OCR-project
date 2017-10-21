@@ -26,20 +26,30 @@ struct Network
    La fonction rand donne un nombre aleatoire, pour avoir un nombre en a et b cela doit etre sous la forme rand()/(double)RAND_MAX * (b-a) + a, or nous n'avons pas de a et b, la valeur est entre 0 et 1.
 */
 neuron neuron_init(size_t size) {
-	  neuron n;
-	  n.weights = malloc(size * sizeof(double)); 
-	 
+	  struct neuron n; 
+	  int a[size * sizeof(double)];
+	  n.weights = a; 
+	  
 	  for (size_t i = 0; i < size; i++) {
 	   *(n.weights+i) = (double)rand()/(double)RAND_MAX;
-	  }  
+	   
+	  }
+
 	  n.size = size;
           n.bias = (double)rand()/(double)RAND_MAX;
-          return n;
+
+	  return n;
 }
 Network network_init(size_t v1, size_t v2, size_t v3)
 {
 	Network r;
+	
+        neuron a = neuron_init(3);
+
+	/*
 	r.l = malloc(3 *sizeof(size_t));
+	
+	
 	*(r.l) = v1;
         *(r.l+1) = v2;
 	*(r.l+2) = v3;
@@ -61,10 +71,9 @@ Network network_init(size_t v1, size_t v2, size_t v3)
        	{
 		*(r.v1 +inter) = neuron_init(0);
 	}
-
+	*/
 	return r;
-
-
+	
 }
 
 double signoid(double x) {
@@ -88,10 +97,9 @@ double output(double input[], double weights[], double bias, size_t size) {
 }
 
 int main ()
-{ 
-       	printf("hello");
-/*	
+{ 	
 	Network r = network_init(2,2,1);
+	
 	for(size_t i = 0 ; i<2 ; i++)
 	{
 		for(size_t j = 0 ; j<2; ++j)
@@ -101,7 +109,7 @@ int main ()
 	
 		}
 		printf("\n");
-	}*/
+	}
 	return 0;
-
+       
 }	
