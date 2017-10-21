@@ -1,7 +1,8 @@
-#include <stdio.h>
+# include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <math.h>
+# include <time.h>
 # include "matrix.h"
 typedef struct neuron neuron;
 struct neuron {
@@ -27,10 +28,11 @@ struct Network
 */
 neuron neuron_init(size_t size) {
 	  struct neuron n; 
-	  int a[size * sizeof(double)];
-	  n.weights =&a;
-	 printf("ok"); 
-	  
+	  double b[size * sizeof(double)];
+	  n.weights =b;
+	  printf("ok\n");
+
+	  srand(time(NULL)); 
 	  for (size_t i = 0; i < size; i++) {
 	   *(n.weights+i) = (double)rand()/(double)RAND_MAX;
 	   
@@ -47,22 +49,23 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 	Network r;
 	
         neuron a = neuron_init(3);
-	
-	printf("%lf",*(a.weights));
+	printf("%lf\n",*(a.weights+2));
 
-	/*
-	r.l = malloc(3 *sizeof(size_t));
-	
+	size_t lenB[3 * sizeof(size_t)];
+	r.l = lenB;
 	
 	*(r.l) = v1;
         *(r.l+1) = v2;
 	*(r.l+2) = v3;
 
-	r.v1 = malloc(v1 * sizeof(neuron));
-       	r.v2 = malloc(v2 * sizeof(neuron));
-	r.v3 = malloc(v3 * sizeof(neuron));
+	neuron couche1[v1* sizeof(neuron)];
+	r.v1 = couche1;
+	neuron couche2[v2* sizeof(neuron)];
+       	r.v2 = couche2;
+	neuron couche3[v3* sizeof(neuron)];
+	r.v3 = couche3;
 	
-		
+	
 	for(size_t inter = 0;inter<v1 ;inter++)
 	{
 		*(r.v1 +inter) = neuron_init(0);
@@ -76,7 +79,7 @@ Network network_init(size_t v1, size_t v2, size_t v3)
        	{
 		*(r.v1 +inter) = neuron_init(0);
 	}
-	*/
+	
 	return r;
 	
 }
