@@ -1,8 +1,8 @@
 # include <SDL.h>
 # include <SDL_image.h>
-# include "pixel_operations.h"
+# include "Traitement/pixel_operations.h"
 # include <err.h>
-# include "neuro.h"
+# include "Reseau/neuro.h"
 
 void wait_for_keypressed(void) {
   SDL_Event             event;
