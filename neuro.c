@@ -28,12 +28,14 @@ struct Network
 neuron neuron_init(size_t size) {
 	  struct neuron n; 
 	  int a[size * sizeof(double)];
-	  n.weights = a; 
+	  n.weights =&a;
+	 printf("ok"); 
 	  
 	  for (size_t i = 0; i < size; i++) {
 	   *(n.weights+i) = (double)rand()/(double)RAND_MAX;
 	   
 	  }
+	  
 
 	  n.size = size;
           n.bias = (double)rand()/(double)RAND_MAX;
@@ -45,6 +47,8 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 	Network r;
 	
         neuron a = neuron_init(3);
+	
+	printf("%lf",*(a.weights));
 
 	/*
 	r.l = malloc(3 *sizeof(size_t));
@@ -53,6 +57,7 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 	*(r.l) = v1;
         *(r.l+1) = v2;
 	*(r.l+2) = v3;
+
 	r.v1 = malloc(v1 * sizeof(neuron));
        	r.v2 = malloc(v2 * sizeof(neuron));
 	r.v3 = malloc(v3 * sizeof(neuron));
@@ -99,7 +104,7 @@ double output(double input[], double weights[], double bias, size_t size) {
 int main ()
 { 	
 	Network r = network_init(2,2,1);
-	
+/*
 	for(size_t i = 0 ; i<2 ; i++)
 	{
 		for(size_t j = 0 ; j<2; ++j)
@@ -111,5 +116,5 @@ int main ()
 		printf("\n");
 	}
 	return 0;
-       
+  */     
 }	
