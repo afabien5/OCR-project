@@ -122,14 +122,7 @@ for (int y = 0; y < image->h; y++)
   SDL_FreeSurface(image);
 
   Network re = network_init(2,2,1); 
-  for(size_t i = 0 ; i > 2 ; i++)
-  {
-	  for(size_t j = 0 ; j<2; ++j)
-	  {
-		  printf("%lf ",*(re.v2[i].weights+j));
-	  }
-	  printf("\n");
-  }
+  parcours(re,1.0,0.0); 
   return 0;
 }
                                      

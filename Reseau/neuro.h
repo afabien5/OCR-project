@@ -29,8 +29,15 @@ neuron neuron_init(size_t size);
 
 Network network_init(size_t v1, size_t v2, size_t v3);
 
+void print_network(Network r);
+
 double signoid(double x);
 
 double derivate(double x);
 
-double output(double input[], double weights[], double biais, size_t size);
+void signoid_n(neuron *n);
+
+void output(neuron *v1, neuron *v2, size_t l1, size_t l2);
+
+
+double parcours(Network r,double imput1, double imput2);

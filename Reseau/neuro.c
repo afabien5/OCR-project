@@ -58,6 +58,7 @@ Network network_init(size_t v1, size_t v2, size_t v3)
         *(r.l+1) = v2;
 	*(r.l+2) = v3;
 
+
 	neuron couche1[v1* sizeof(neuron)];
 	r.v1 = couche1;
 	neuron couche2[v2* sizeof(neuron)];
@@ -84,15 +85,29 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 	
 }
 
+void print_network(Network r)
+{
+	printf("\n");
+	printf("%lf/%lf  %lf/%lf\n",r.v1[0].entree,r.v1[0].sortie,r.v2[0].entree,r.v2[0].sortie);
+	printf("                                    %lf/%lf\n ",r.v3[0].entree, r.v3[0].sortie); 
+     	printf("%lf/%lf  %lf/%lf\n",r.v1[1].entree,r.v1[1].sortie,r.v2[1].entree,r.v2[1].sortie); 
+	printf("\n--------------------------------------------------------\n");
+}
+
+
 double signoid(double x) {
 	  return 1 / (1 + exp(-x));
 }
 
+void signoid_n(neuron *n)
+{
+	        (*n).sortie = (*n).entree + (*n).bias ;
+		
+}
 
 double derivate(double x) {
 	  return x * (1 - x);
 }
-
 
 
 
@@ -107,24 +122,61 @@ double derivate(double x) {
 
 		/* Parcours du reseau */ 	
 
-double parcours(Network r,double imput1, double imput2) {
+/*double parcours(Network r,double imput1, double imput2) {
 	r.inter = 0;
 	r.v1[0].sortie = imput1;
+	print_network(r);
 	r.v1[1].sortie = imput2;
+	print_network(r);
 
-}
+	output(r.v1,r.v2,r.l[0],r.l[1]);
+	print_network(r);
+
+       	output(r.v2,r.v3,r.l[1],r.l[2]);
+	print_network(r);
+
+
+	return(r.v3[0].sortie);
+
+}*/
 
 void output(neuron *v1, neuron *v2, size_t l1, size_t l2){
+	size_t k = 0;
 	for(size_t i = 0; i<l1; ++l1)
-	{
-		for(size_t j = 0 , j<l2; ++j)
+	{       
+		
+		for(size_t j = 0 ; j<l2; ++j)
 		{
-			*(v2+j).entree += *(v1+i).sortie * *(v2+j).weights[r.inter];
-			r.inter++;
+			(v2+j)->entree += (v1+i)->sortie * (v2+j)->weights[k];
+			k++;
 		}
-		r.inter = 0;
+		k =0;
+	}
+	for(size_t j = 0 ; j>l2; ++j ) 
+	{
+	
+		(v2+j)->entree += (v2+j)->bias;
+		signoid_n(v2+j);
+
 	}
 	
 }
+double parcours(Network r,double imput1, double imput2) {
+	//r.inter = 0;
+	r.v1[0].sortie = imput1;
+	print_network(r);
+	r.v1[1].sortie = imput2;
+	print_network(r);
+	output((r.v1),(r.v2),2,2);
+	
+	print_network(r);
+	output(r.v2,r.v3,2,1);
+	print_network(r);
+	return(r.v3[0].sortie);
+
+}
+
+
+
 
 
