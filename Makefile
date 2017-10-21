@@ -1,34 +1,23 @@
-#OCR 2017/2018
-# Compilers and options
-
-# Setting the compiler and the default linker program
-
-CC = gcc   -fsanitize=address
-# options for pre-processor (-I, -include, -D ... )
-CPPFLAGS = -MMD
-# main compilation options
-CFLAGS = -Wall -Wextra -std=c99 -O0 -g
-# Linker options (probably always empty)
-LDFLAGS =
-# libs and path for linker
-LDLIBS = -lm
-
-#indicate source file and make a list
-
-OBJ = neuro.o
-DEP = ${OBJ:.o=.d} 
-
-all: neuro
-
-neuron: ${OBJ}
-
-.PHONY: clean
-
+#Simple SDL mini code
+ 
+CC=gcc
+ 
+CPPFLAGS= `pkg-config --cflags sdl` -MMD
+CFLAGS= -Wall -Wextra -Werror -std=c99 -O3
+LDFLAGS=
+LDLIBS= `pkg-config --libs sdl` -lSDL_image
+ 
+OBJ= pixel_operations.o main.o
+DEP= ${SRC:.o=.d}
+ 
+all: main
+ 
+main: ${OBJ}
+ 
 clean:
-	${RM} *.d      # remove object files
-	${RM} *.o      # remove object files
-	${RM} main     # remove main program
-
+	${RM} ${OBJ} ${DEP} *~
+	${RM} main
+ 
 -include ${DEP}
+ 
 # END
-
