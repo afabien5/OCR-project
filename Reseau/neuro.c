@@ -50,8 +50,6 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 {
 	Network r;
 	
-        neuron a = neuron_init(3);
-	printf("%lf\n",*(a.weights+2));
 
 	size_t lenB[3 * sizeof(size_t)];
 	r.l = lenB;
@@ -98,28 +96,35 @@ double derivate(double x) {
 
 
 
-double output(double input[], double weights[], double bias, size_t size) {
+/*double output(double input[], double weights[], double bias, size_t size) {
 	  double retour = 0;
 	    for(size_t i = 0; i < size; i++) {
 		        retour += input[i] * weights[i];
 			  }
 	      return signoid(retour + bias);
+}*/
+
+
+		/* Parcours du reseau */ 	
+
+double parcours(Network r,double imput1, double imput2) {
+	r.inter = 0;
+	r.v1[0].sortie = imput1;
+	r.v1[1].sortie = imput2;
+
 }
 
-//int main ()
-//{ 	
-/*	Network r = network_init(2,2,1);
-
-	for(size_t i = 0 ; i<2 ; i++)
+void output(neuron *v1, neuron *v2, size_t l1, size_t l2){
+	for(size_t i = 0; i<l1; ++l1)
 	{
-		for(size_t j = 0 ; j<2; ++j)
+		for(size_t j = 0 , j<l2; ++j)
 		{
-		printf("%lf ",*(r.v2[i].weights+j));
-
-	
+			*(v2+j).entree += *(v1+i).sortie * *(v2+j).weights[r.inter];
+			r.inter++;
 		}
-		printf("\n");
+		r.inter = 0;
 	}
-	return 0;
-  */   
-//}	
+	
+}
+
+
