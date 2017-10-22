@@ -33,13 +33,16 @@ neuron neuron_init(size_t size) {
 	  double b[size * sizeof(double)];
 	  n.weights =b;
 
-	  srand(time(NULL)); 
+	   
 
 	  for (size_t i = 0; i < size; i++) {
 	   *(n.weights+i) = (double)rand()/(double)RAND_MAX; 
 	  }
 	  
+	  
 	  n.size = size;
+	  
+
           n.bias = (double)rand()/(double)RAND_MAX;
 		
 	  printf("ok\n");
@@ -64,7 +67,7 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 	neuron couche3[v3* sizeof(neuron)];
 	r.v3 = couche3;
 	
-	
+	srand(time(NULL));
 	for(size_t inter = 0;inter<v1 ;inter++)
 	{
 		*(r.v1 +inter) = neuron_init(1);
@@ -85,12 +88,21 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 
 void print_network(Network r)
 {
+       	printf("\n");
+	printf("%lf/%lf  %lf/%lf\n",r.v1[0].entree,r.v1[0].sortie,r.v2[0].entree,r.v2[0].sortie);
+	printf("                                    %lf/%lf\n ",r.v3[0].entree, r.v3[0].sortie);
+	printf("%lf/%lf  %lf/%lf\n",r.v1[1].entree,r.v1[1].sortie,r.v2[1].entree,r.v2[1].sortie);
+	printf("\n--------------------------------------------------------\n");
+}
+
+/*void print_network(Network r)
+{
 	printf("Reseau: \n");
 	printf("Entrer/Sortie v1/neuron1: %lf/%lf\nEntrer/Sortie v2/neuron1: %lf/%lf\n",r.v1[0].entree,r.v1[0].sortie,r.v2[0].entree,r.v2[0].sortie);
 	printf("Entrer/Sortie v3:         %lf/%lf\n",r.v3[0].entree, r.v3[0].sortie); 
      	printf("Entrer/Sortie v1/neuron2: %lf/%lf\nEntrer/Sortie v2/neuron2: %lf/%lf\n",r.v1[1].entree,r.v1[1].sortie,r.v2[1].entree,r.v2[1].sortie); 
 	printf("\n--------------------------------------------------------\n");
-}
+}*/
 
 /*void print_neuron(neuron n) {
 	for(size_t i = 0; i<l1; ++i){
@@ -154,11 +166,12 @@ void output(neuron *v1, neuron *v2, size_t l1, size_t l2){
 		for(size_t j = 0 ; j<l2; ++j)
 		{
 			(v2+j)->entree += (v1+i)->sortie * (v2+j)->weights[i];
+			printf("%lf ",(v2+j)->entree);
 			
 		}
 
 	}
-	for(size_t j = 0 ; j>l2; ++j ) 
+	for(size_t j = 0 ; j<l2; ++j ) 
 	{
 	
 		(v2+j)->entree += (v2+j)->bias;
@@ -181,6 +194,7 @@ void output(neuron *v1, neuron *v2, size_t l1, size_t l2){
 }*/
 double parcours(Network r,double imput1, double imput2) {
 	//r.inter = 0;
+	
 	r.v1[0].sortie = imput1;
 
 	r.v1[1].sortie = imput2;
