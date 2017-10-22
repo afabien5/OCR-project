@@ -6,7 +6,7 @@
 # include "matrix.h"
 typedef struct neuron neuron;
 struct neuron {
-	size_t size;
+	size_t size;    //number of neuron imputs.
 	double *weights;
 	double entree;
 	double sortie;
@@ -49,7 +49,6 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 {
 	Network r;
 	
-
 	size_t lenB[3 * sizeof(size_t)];
 	r.l = lenB;
 	
@@ -68,16 +67,16 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 	
 	for(size_t inter = 0;inter<v1 ;inter++)
 	{
-		*(r.v1 +inter) = neuron_init(0);
+		*(r.v1 +inter) = neuron_init(1);
 
 	}
 	for(size_t inter = 0;inter<v2 ;inter++)
         {
-		*(r.v1 +inter) = neuron_init(*(r.l));
+		*(r.v2 +inter) = neuron_init(2); 
        	}
-	for(size_t inter = 0;inter<v1 ;inter++)
+	for(size_t inter = 0;inter<v3 ;inter++)
        	{
-		*(r.v1 +inter) = neuron_init(0);
+		*(r.v3 +inter) = neuron_init(2);   
 	}
 	
 	return r;
@@ -92,6 +91,15 @@ void print_network(Network r)
      	printf("Entrer/Sortie v1/neuron2: %lf/%lf\nEntrer/Sortie v2/neuron2: %lf/%lf\n",r.v1[1].entree,r.v1[1].sortie,r.v2[1].entree,r.v2[1].sortie); 
 	printf("\n--------------------------------------------------------\n");
 }
+
+/*void print_neuron(neuron n) {
+	for(size_t i = 0; i<l1; ++i){
+		
+		for(size_t j = 0 ; j<l2; ++j){
+		       	
+		}
+ 	}
+}*/
 
 
 double signoid(double x) {
@@ -140,30 +148,41 @@ double derivate(double x) {
 }*/
 
 void output(neuron *v1, neuron *v2, size_t l1, size_t l2){
-	size_t k = 0;
-	for(size_t i = 0; i<l1; ++l1)
+	
+	for(size_t i = 0; i<l1; ++i)
 	{       
-		
 		for(size_t j = 0 ; j<l2; ++j)
 		{
-			(v2+j)->entree += (v1+i)->sortie * (v2+j)->weights[k];
-			k++;
+			(v2+j)->entree += (v1+i)->sortie * (v2+j)->weights[i];
+			
 		}
-		k =0;
+
 	}
 	for(size_t j = 0 ; j>l2; ++j ) 
 	{
 	
 		(v2+j)->entree += (v2+j)->bias;
-		signoid_n(v2+j);
+		//printf("%lf",(v2+j)->entree);
+		(v2+j)->sortie = signoid((v2+j)-> entree );
+		//printf("%lf",(v2+j)->sortie);
+
 
 	}
-	
 }
+
+/*void output1(neuron *v1, neuron *v2, size_t l1, size_t l2, size_t w) {
+	size_t lencouche = 2
+	for( size_t i = 0, i < l1, ++i) {
+		for(size_t j = 0, j < l2, j++)
+		{
+			v1[i]
+		}
+	}
+}*/
 double parcours(Network r,double imput1, double imput2) {
 	//r.inter = 0;
 	r.v1[0].sortie = imput1;
-	print_network(r);
+
 	r.v1[1].sortie = imput2;
 	print_network(r);
 	output((r.v1),(r.v2),2,2);
