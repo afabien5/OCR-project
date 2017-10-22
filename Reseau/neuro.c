@@ -21,6 +21,11 @@ struct Network
 	neuron *v3;
 	size_t *l;
 	size_t inter;
+	double *z2;
+	double *a2;
+	double *z3;
+	double *a3;
+
 };
 
 /* La fonctino malloc retourne un pointeur sur le premier byte allouer. Sizeof donne la taille de l'element dans le tab, c'est à dire la m taille qu'un double * size.
@@ -54,7 +59,18 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 	
 	size_t lenB[3 * sizeof(size_t)];
 	r.l = lenB;
-	
+
+	double z2[v2* sizeof(double)];
+	double a2[v2* sizeof(double)];
+	double a3[v3* sizeof(double)];
+	double z3[v3* sizeof(double)];
+	r.z2 = z2;
+	r.a2 = a2;
+	r.z3 = z3;
+	r.a3 = a3;
+
+
+
 	*(r.l) = v1;
         *(r.l+1) = v2;
 	*(r.l+2) = v3;
@@ -177,4 +193,19 @@ double cost(Network r)
 	double res2 = 0.5 * ( 1 - parcours(r, 0, 1) ) + 0.5* (0 - parcours(r,1,0));
 	return res1+res2;
 }
+Network update_network(Network r)
+{
 
+	for(size_t i = 0 ; i<r.l[1]; i++)
+	{
+		*(r.z2+i) = (r.v2)->entree;
+		*(r.a2+i) = (r.v2)->sortie;
+
+	}
+	for(size_t j = 0; j<r.l[2]; ++j)
+	{
+		*(r.z3+j) = (r.v3)->entree;
+		*(r.a3+j) = (r.v3)->sortie;
+	}
+	return r;
+}
