@@ -206,3 +206,13 @@ Network update_network(Network r)
 	}
 	return r;
 }
+void print_vector(double *begin, double *end)
+{
+	printf("\n");
+
+	for(;begin<end ; begin++)
+	{
+		printf("%lf ",*(begin) );
+	}
+	printf("\n");
+}
