@@ -71,9 +71,9 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 
 
 
-	*(r.l) = v1;
-        *(r.l+1) = v2;
-	*(r.l+2) = v3;
+	r.l[0] = v1;
+        r.l[1] = v2;
+	r.l[2] = v3;
 
 
 	neuron couche1[v1* sizeof(neuron)];
@@ -191,16 +191,18 @@ double cost(Network r)
 Network update_network(Network r)
 {
 
-	for(size_t i = 0 ; i<r.l[1]; i++)
+	for(size_t i = 0 ; i<2; i++)
 	{
-		*(r.z2+i) = (r.v2)->entree;
-		*(r.a2+i) = (r.v2)->sortie;
+		*(r.z2+i) = (r.v2+i)->entree;
+		*(r.a2+i) = (r.v2+i)->sortie;
 
 	}
-	for(size_t j = 0; j<r.l[2]; ++j)
+	
+	for(size_t j = 0; j<1; ++j)
 	{
-		*(r.z3+j) = (r.v3)->entree;
-		*(r.a3+j) = (r.v3)->sortie;
+	
+		*(r.z3+j) = (r.v3+j)->entree;
+		*(r.a3+j) = (r.v3+j)->sortie;
 	}
 	return r;
 }
