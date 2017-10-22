@@ -68,6 +68,9 @@ int main(int argc, char **argv)
     // argv is the array of parameters
     // ./my_exe my_img.png  -> argc = 2 and argv[1] = "my_img.png"
     // argv[0] is the executable name (here "./my_exe")
+  
+/*
+
   if (argc < 2)
   {
     printf("usage: ./main path_to_img\n");
@@ -120,9 +123,12 @@ for (int y = 0; y < image->h; y++)
   //wait_for_keypressed();
 
   SDL_FreeSurface(image);
-
+*/
+  printf("%d",argc);
+  printf("%s\n", argv[1]);
   Network re = network_init(2,2,1); 
-  parcours(re,1.0,0.0); 
+  print_network(re);
+  //parcours(re,1.0,0.0); 
   return 0;
 }
                                      

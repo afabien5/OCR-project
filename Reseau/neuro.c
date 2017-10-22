@@ -32,18 +32,17 @@ neuron neuron_init(size_t size) {
 	  n.sortie = 0;
 	  double b[size * sizeof(double)];
 	  n.weights =b;
-	  printf("ok\n");
 
 	  srand(time(NULL)); 
+
 	  for (size_t i = 0; i < size; i++) {
-	   *(n.weights+i) = (double)rand()/(double)RAND_MAX;
-	   
+	   *(n.weights+i) = (double)rand()/(double)RAND_MAX; 
 	  }
 	  
-
 	  n.size = size;
           n.bias = (double)rand()/(double)RAND_MAX;
-
+		
+	  printf("ok\n");
 	  return n;
 }
 Network network_init(size_t v1, size_t v2, size_t v3)
@@ -87,10 +86,10 @@ Network network_init(size_t v1, size_t v2, size_t v3)
 
 void print_network(Network r)
 {
-	printf("\n");
-	printf("%lf/%lf  %lf/%lf\n",r.v1[0].entree,r.v1[0].sortie,r.v2[0].entree,r.v2[0].sortie);
-	printf("                                    %lf/%lf\n ",r.v3[0].entree, r.v3[0].sortie); 
-     	printf("%lf/%lf  %lf/%lf\n",r.v1[1].entree,r.v1[1].sortie,r.v2[1].entree,r.v2[1].sortie); 
+	printf("Reseau: \n");
+	printf("Entrer/Sortie v1/neuron1: %lf/%lf\nEntrer/Sortie v2/neuron1: %lf/%lf\n",r.v1[0].entree,r.v1[0].sortie,r.v2[0].entree,r.v2[0].sortie);
+	printf("Entrer/Sortie v3:         %lf/%lf\n",r.v3[0].entree, r.v3[0].sortie); 
+     	printf("Entrer/Sortie v1/neuron2: %lf/%lf\nEntrer/Sortie v2/neuron2: %lf/%lf\n",r.v1[1].entree,r.v1[1].sortie,r.v2[1].entree,r.v2[1].sortie); 
 	printf("\n--------------------------------------------------------\n");
 }
 
