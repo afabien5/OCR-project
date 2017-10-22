@@ -206,6 +206,7 @@ Network update_network(Network r)
 	}
 	return r;
 }
+
 void print_vector(double *begin, double *end)
 {
 	printf("\n");
@@ -216,3 +217,40 @@ void print_vector(double *begin, double *end)
 	}
 	printf("\n");
 }
+
+void derivateTab( double z[], size_t lines, size_t cols, double res[])
+{
+	for(size_t i = 0; i < lines;  i++)
+	{
+		 for(size_t j = 0; j < cols; j++)
+		 {
+		   res[j+i*cols] = derivate(z[j+i*cols]);
+		 }
+	}
+}
+
+void product_val_matrice(double z[], size_t lines, size_t cols, double res[], double val)
+{
+	for(size_t i = 0; i < lines;  i++)
+	{
+		for(size_t j = 0; j < cols; j++)
+		{
+			res[j+i*cols] = val * z[j+i*cols]; 
+		}
+	}
+}
+
+/*
+void derivate1(Network r, double a2[],size_t alines, size_t acols, double z3, double val, double imput1, double imput2, double res[])
+{
+	double a2T[2];
+	double derivateZ3 = derivate(z3);
+	transpose(a2, 1, 2, a2T);
+	//derivateTab(z3, zlines, zcols, derivateZ3);
+	double del = -1 * (val - parcours(r, imput1, imput2))* derivateZ3 ;
+	product_val_matrice(a2T, alines, acols, res, del);
+      
+
+
+}
+*/
