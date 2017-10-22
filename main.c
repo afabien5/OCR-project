@@ -128,7 +128,8 @@ for (int y = 0; y < image->h; y++)
   printf("%s\n", argv[1]);
   Network re = network_init(2,2,1); 
 
-  parcours(re,0.0,1.0); 
+  parcours(re,0.0,1.0);
+ printf("ok"); 
   return 0;
 }
                                      
