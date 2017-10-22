@@ -110,7 +110,6 @@ SDL_Surface* display_image(SDL_Surface *img) {
 
 void ReadText (struct Matrix M, int spacing)
 {
-	printf("in readtext");
         for (int y=0; y<height(M) ; ++y)
         {
                         int x=0; 
@@ -139,7 +138,6 @@ void ReadText (struct Matrix M, int spacing)
 
 void ReadLine(struct Matrix M, int y1, int y2, int spacing)
 {
-	printf("in readline");
         for (int x = 0; x<width(M) ; ++x)
         {
                 int y = y1;
@@ -169,7 +167,6 @@ void ReadLine(struct Matrix M, int y1, int y2, int spacing)
 
 void ReadWord(struct Matrix M, int y1, int y2, int x1, int x2)
 {
-	printf("in readword");
         for(int x =x1; x<x2; ++x)
         {
                 int y = y1;
@@ -194,7 +191,6 @@ void ReadWord(struct Matrix M, int y1, int y2, int x1, int x2)
 
 void ShrinkCharacter(struct Matrix M, int y1, int y2, int x1, int x2)
 {
-	printf("in shrinchar");
         int x;
         int y = y1;
         while (y<y2)
