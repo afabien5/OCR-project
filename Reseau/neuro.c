@@ -117,12 +117,6 @@ double signoid(double x) {
 	  return 1 / (1 + exp(-x));
 }
 
-void signoid_n(neuron *n)
-{
-	        (*n).sortie = (*n).entree + (*n).bias ;
-		
-}
-
 double derivate(double x) {
 	  return x * (1 - x);
 }
@@ -193,6 +187,7 @@ double cost(Network r)
 	double res2 = 0.5 * ( 1 - parcours(r, 0, 1) ) + 0.5* (0 - parcours(r,1,0));
 	return res1+res2;
 }
+
 Network update_network(Network r)
 {
 

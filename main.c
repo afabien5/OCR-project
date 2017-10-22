@@ -129,7 +129,9 @@ for (int y = 0; y < image->h; y++)
   Network re = network_init(2,2,1); 
 
   parcours(re,0.0,1.0);
- printf("ok"); 
+  update_network(re);
+  
+  printf("ok\n"); 
   return 0;
 }
                                      
