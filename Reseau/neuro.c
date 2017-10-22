@@ -90,28 +90,11 @@ void print_network(Network r)
 {
        	printf("\n");
 	printf("%lf/%lf  %lf/%lf\n",r.v1[0].entree,r.v1[0].sortie,r.v2[0].entree,r.v2[0].sortie);
-	printf("                                    %lf/%lf\n ",r.v3[0].entree, r.v3[0].sortie);
+	printf("                                    %lf/%lf\n",r.v3[0].entree, r.v3[0].sortie);
 	printf("%lf/%lf  %lf/%lf\n",r.v1[1].entree,r.v1[1].sortie,r.v2[1].entree,r.v2[1].sortie);
 	printf("\n--------------------------------------------------------\n");
 }
 
-/*void print_network(Network r)
-{
-	printf("Reseau: \n");
-	printf("Entrer/Sortie v1/neuron1: %lf/%lf\nEntrer/Sortie v2/neuron1: %lf/%lf\n",r.v1[0].entree,r.v1[0].sortie,r.v2[0].entree,r.v2[0].sortie);
-	printf("Entrer/Sortie v3:         %lf/%lf\n",r.v3[0].entree, r.v3[0].sortie); 
-     	printf("Entrer/Sortie v1/neuron2: %lf/%lf\nEntrer/Sortie v2/neuron2: %lf/%lf\n",r.v1[1].entree,r.v1[1].sortie,r.v2[1].entree,r.v2[1].sortie); 
-	printf("\n--------------------------------------------------------\n");
-}*/
-
-/*void print_neuron(neuron n) {
-	for(size_t i = 0; i<l1; ++i){
-		
-		for(size_t j = 0 ; j<l2; ++j){
-		       	
-		}
- 	}
-}*/
 
 
 double signoid(double x) {
@@ -127,17 +110,6 @@ void signoid_n(neuron *n)
 double derivate(double x) {
 	  return x * (1 - x);
 }
-
-
-
-/*double output(double input[], double weights[], double bias, size_t size) {
-	  double retour = 0;
-	    for(size_t i = 0; i < size; i++) {
-		        retour += input[i] * weights[i];
-			  }
-	      return signoid(retour + bias);
-}*/
-
 
 		/* Parcours du reseau */ 	
 
@@ -160,7 +132,7 @@ double derivate(double x) {
 }*/
 
 void output(neuron *v1, neuron *v2, size_t l1, size_t l2){
-	
+
 	for(size_t i = 0; i<l1; ++i)
 	{       
 		for(size_t j = 0 ; j<l2; ++j)
@@ -169,7 +141,7 @@ void output(neuron *v1, neuron *v2, size_t l1, size_t l2){
 			printf("%lf ",(v2+j)->entree);
 			
 		}
-
+		
 	}
 	for(size_t j = 0 ; j<l2; ++j ) 
 	{
@@ -177,21 +149,12 @@ void output(neuron *v1, neuron *v2, size_t l1, size_t l2){
 		(v2+j)->entree += (v2+j)->bias;
 		//printf("%lf",(v2+j)->entree);
 		(v2+j)->sortie = signoid((v2+j)-> entree );
-		//printf("%lf",(v2+j)->sortie);
-
+		//printf("%lf",(v2+j)->sortie:
 
 	}
 }
 
-/*void output1(neuron *v1, neuron *v2, size_t l1, size_t l2, size_t w) {
-	size_t lencouche = 2
-	for( size_t i = 0, i < l1, ++i) {
-		for(size_t j = 0, j < l2, j++)
-		{
-			v1[i]
-		}
-	}
-}*/
+
 double parcours(Network r,double imput1, double imput2) {
 	//r.inter = 0;
 	
@@ -208,7 +171,10 @@ double parcours(Network r,double imput1, double imput2) {
 
 }
 
-
-
-
+double cost(Network r) 
+{
+	double res1 = 0.5 * ( 0 - parcours(r, 0, 0) ) + 0.5* (0 - parcours(r,1,1));
+	double res2 = 0.5 * ( 1 - parcours(r, 0, 1) ) + 0.5* (0 - parcours(r,1,0));
+	return res1+res2;
+}
 
