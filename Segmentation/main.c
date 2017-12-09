@@ -3,6 +3,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include "pixel_operations.h"
+#include <stdlib.h>
 
 struct Matrix {
   int *M;
@@ -32,21 +33,20 @@ void set(struct Matrix M, int x, int y, int value) {
   M.M[y * width(M) + x] = value;
 }
 
-void highlight(struct Matrix M, int x, int y) {
+void highlight(struct Matrix M, int x, int y, int n) {
   assert(in(M, x, y));
-  M.M[y * width(M) + x] = get(M, x, y) | 2;
+  	M.M[y * width(M) + x] =  n;
 }
 
 int is_blank(int value) {
   return (value & 1) == 0;
 }
 
-/*Waiting for a key: */
 void ReadText(struct Matrix M, int spacing);
 void ReadLine(struct Matrix M, int y1, int y2, int spacing);
 void ReadWord(struct Matrix M, int y1 , int y2, int x1, int x2);
 void ShrinkCharacter(struct Matrix M, int y1, int y2, int begin, int end);
-void ChangeMatrix(struct Matrix M, int y1, int y2, int x1, int x2);
+void ChangeMatrix(struct Matrix M, int y1, int y2, int x1, int x2, int n);
 
 void wait_for_keypressed(void) {
   SDL_Event             event;
@@ -131,7 +131,8 @@ void ReadText (struct Matrix M, int spacing)
                                                 break;
                                 }
                                 int y2 = y;
-                                ReadLine(M, y1, y2, spacing);
+                                ReadLine(M, y1, y2-1, spacing);
+				ChangeMatrix(M, y1-1, y2+1, 0, width(M)-1, 4);
                         }
         }
 }
@@ -160,7 +161,8 @@ void ReadLine(struct Matrix M, int y1, int y2, int spacing)
                                         break;
                         }
                         int x2 = x-spacing+1; 
-                        ReadWord(M, y1, y2, x1, x2);
+                        ReadWord(M, y1, y2, x1, x2-1);
+			ChangeMatrix(M, y1-1, y2+1, x1-1, x2+1, 3);
                 }
         }
 }
@@ -184,7 +186,7 @@ void ReadWord(struct Matrix M, int y1, int y2, int x1, int x2)
                                         break;
                         }
                         int x2 = x;
-                        ShrinkCharacter(M, y1,y2,x1,x2);
+                        ShrinkCharacter(M, y1,y2,x1,x2-1);
                 }
         }
 }
@@ -245,19 +247,19 @@ void ShrinkCharacter(struct Matrix M, int y1, int y2, int x1, int x2)
                 }
                 --x;
         }
-	ChangeMatrix(M, y1, y2, x1, x2);
+	ChangeMatrix(M, y1-1, y2+1, x1-1, x2+1, 2);
 }
 
-void ChangeMatrix(struct Matrix M, int y1, int y2, int x1, int x2)
+void ChangeMatrix(struct Matrix M, int y1, int y2, int x1, int x2, int n)
 {
         int x, y;
         for (x = x1; x <= x2; ++x) {
-                highlight(M, x, y1);
-                highlight(M, x, y2);
+                highlight(M, x, y1, n);
+                highlight(M, x, y2, n);
         }
         for (y = y1; y <= y2; ++y) {
-                highlight(M, x1, y);
-                highlight(M, x2, y);
+                highlight(M, x1, y, n);
+                highlight(M, x2, y, n);
         }
 }
 
@@ -272,16 +274,34 @@ void PrintMatrix(struct Matrix M)
                 printf("\n");
         }
 
+}/*
+struct Matrix *resize(struct Matrix M,  int y1, int y2, int x1, int x2, int n)
+{
+	struct Mat NewMatrix = malloc(sizeof(struct Matrix));
+	NewMat->width = 16;
+	NewMat->height = 16;
+	NewMat->M = calloc(256, sizeof(int));
+	int L =  x2-x1+1;
+	int H = y2-y1+1;
+	for (size_t i = 0; i<16; ++i)
+	{
+		for (size_t j = 0; j<16; ++j)
+		
+	}
+	
 }
-
+*/
 int main(int argc, char **argv)
 {
-        if (argc < 2) {
+        if (argc < 3) {
                 printf("missing argument\n");
                 return 1;
         }
         init_sdl();
         SDL_Surface* image = load_image(argv[1]);
+				SDL_Surface* imageLines = load_image(argv[1]);
+				SDL_Surface* imageWords = load_image(argv[1]);
+				SDL_Surface* imageLetters = load_image(argv[1]);
 	int h = image->h;
 	int w = image->w;
 	printf("%i",h);
@@ -298,20 +318,35 @@ int main(int argc, char **argv)
                         set(M, x, y, (r + g + b < 100) ? 1 : 0);
                 }
         }
-	ReadText(M, 2);
+	int spacing = *argv[2];
+	ReadText(M, spacing);
 	for (int y = 0; y< h; ++y)
         {
                 for (int x = 0; x<w; ++x)
                 {
-			if (get(M, x, y) > 1)
+			if (get(M, x, y) == 2)
 			{
-				Uint32 curpixel = SDL_MapRGB(image->format, 255, 0, 0);
-				putpixel(image,x,y,curpixel);
-			}       
-                        
+				Uint32 curpixel = SDL_MapRGB(imageLetters->format, 255, 0, 0);
+				putpixel(imageLetters,x,y,curpixel);
+			}
+			 else if (get(M, x, y) == 3)
+      {
+        Uint32 curpixel = SDL_MapRGB(imageWords->format, 0, 255, 0);
+        putpixel(imageWords,x,y,curpixel);
+      }
+			 else if (get(M, x, y) == 4)
+      {
+        Uint32 curpixel = SDL_MapRGB(imageLines->format, 0, 0, 255);
+        putpixel(imageLines,x,y,curpixel);
+      }                       
                 }
         }
-	display_image(image);
-        SDL_FreeSurface(image);
+	SDL_SaveBMP( imageLines, "imageLines.bmp" );
+	SDL_SaveBMP( imageWords, "imageWords.bmp" );
+	SDL_SaveBMP( imageLetters, "imageLetters.bmp" ); 
+  SDL_FreeSurface(imageLines);
+  SDL_FreeSurface(imageWords);
+  SDL_FreeSurface(imageLetters);
+  SDL_FreeSurface(image);
   return 0;
 }
