@@ -48,3 +48,4 @@ double cost(Network r);
 
 Network update_network(Network r);
 
+void print_vector(double *begin, double *end);

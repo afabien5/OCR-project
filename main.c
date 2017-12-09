@@ -130,6 +130,8 @@ for (int y = 0; y < image->h; y++)
 
   parcours(re,0.0,1.0);
   update_network(re);
+  print_vector(re.z2,re.z2+2);
+
   
   printf("ok\n"); 
   return 0;
