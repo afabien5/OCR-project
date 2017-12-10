@@ -4,7 +4,7 @@
 #include <SDL/SDL_image.h>
 #include "pixel_operations.h"
 #include <stdlib.h>
-
+#include <segmentation.h>
 struct Matrix {
   int *M;
   int width;
@@ -25,7 +25,12 @@ int in(struct Matrix M, int x, int y) {
 
 int get(struct Matrix M, int x, int y) {
   assert(in(M, x, y));
-  return M.M[y * M.width + x];
+  return M.M[y * M.width + x]&1;
+}
+
+int getcolor(struct Matrix M, int x, int y) {
+  assert(in(M, x, y));
+  return M.M[y * M.width + x]&(~1);
 }
 
 void set(struct Matrix M, int x, int y, int value) {
@@ -35,13 +40,23 @@ void set(struct Matrix M, int x, int y, int value) {
 
 void highlight(struct Matrix M, int x, int y, int n) {
   assert(in(M, x, y));
-  	M.M[y * width(M) + x] =  n;
+  M.M[y * width(M) + x] |= n;
 }
 
 int is_blank(int value) {
   return (value & 1) == 0;
 }
 
+double min(double a, double b)
+{
+	return (a<b) ? a : b;
+}
+double max(double a, double b)
+{
+	return (a>b) ? a : b;
+}
+void PrintMatrix(struct Matrix M);
+struct Matrix resize(struct Matrix M, int y1, int y2, int x1, int x2, int newsize);
 void ReadText(struct Matrix M, int spacing);
 void ReadLine(struct Matrix M, int y1, int y2, int spacing);
 void ReadWord(struct Matrix M, int y1 , int y2, int x1, int x2);
@@ -132,7 +147,7 @@ void ReadText (struct Matrix M, int spacing)
                                 }
                                 int y2 = y;
                                 ReadLine(M, y1, y2-1, spacing);
-				ChangeMatrix(M, y1-1, y2+1, 0, width(M)-1, 4);
+				ChangeMatrix(M, y1-3, y2+2, 0, width(M)-1, 8);
                         }
         }
 }
@@ -162,7 +177,7 @@ void ReadLine(struct Matrix M, int y1, int y2, int spacing)
                         }
                         int x2 = x-spacing+1; 
                         ReadWord(M, y1, y2, x1, x2-1);
-			ChangeMatrix(M, y1-1, y2+1, x1-1, x2+1, 3);
+			ChangeMatrix(M, y1-2, y2+2, x1-2, x2+1, 4);	
                 }
         }
 }
@@ -248,6 +263,8 @@ void ShrinkCharacter(struct Matrix M, int y1, int y2, int x1, int x2)
                 --x;
         }
 	ChangeMatrix(M, y1-1, y2+1, x1-1, x2+1, 2);
+	PrintMatrix(resize(M, y1,y2,x1,x2, 16));
+
 }
 
 void ChangeMatrix(struct Matrix M, int y1, int y2, int x1, int x2, int n)
@@ -274,21 +291,81 @@ void PrintMatrix(struct Matrix M)
                 printf("\n");
         }
 
-}/*
-struct Matrix *resize(struct Matrix M,  int y1, int y2, int x1, int x2, int n)
+}
+struct Matrix resize(struct Matrix M,  int y1, int y2, int x1, int x2, int newsize)
 {
-	struct Mat NewMatrix = malloc(sizeof(struct Matrix));
-	NewMat->width = 16;
-	NewMat->height = 16;
-	NewMat->M = calloc(256, sizeof(int));
-	int L =  x2-x1+1;
+	struct Matrix NewMat;
+	NewMat.width = newsize;
+	NewMat.height = newsize;
+	NewMat.M = calloc(newsize*newsize, sizeof(int));
+	int L = x2-x1+1;
 	int H = y2-y1+1;
-	for (size_t i = 0; i<16; ++i)
+	double leftside;
+	double rightside;
+	double top;
+	double bottom;
+	double A;
+	double A_sum;
+	double A_val;
+	double A_val_sum;
+	double ratio;
+	for (int i = 0; i<newsize; ++i)
 	{
-		for (size_t j = 0; j<16; ++j)
-		
+		for (int j = 0 ; j<newsize; ++j)
+		{	A_sum = 0;
+			A_val_sum = 0;
+			double mapped_left = ((double)(i*L))/newsize;
+			double mapped_right = ((double)((i+1)*L))/newsize;
+			double mapped_top = ((double)(j*H))/newsize;
+			double mapped_bottom = ((double)((j+1)*H))/newsize;
+			for (int k = 0; k <= L; ++k)
+			{
+				for (int l = 0; l<= H; ++l)
+				{	A=0;
+					A_val =0;
+					leftside = max(mapped_left, k);
+					rightside = min(mapped_right,k+1);
+				 	top = max(mapped_top, l);
+					bottom = min(mapped_bottom, l+1);
+					if (leftside<rightside && bottom > top)
+					{
+						A = (rightside - leftside) * (bottom-top);
+						A_val = A * get(M, x1 + k, y1 + l);
+						A_val_sum += A_val;
+						A_sum += A;	
+					}
+				}
+			}
+			ratio = A_val_sum/A_sum;
+			assert(ratio<=1);
+			if (ratio<0.5)
+				set(NewMat, i, j, 0);
+			else
+				set(NewMat, i, j, 1);	
+		}
 	}
-	
+	return NewMat;
+}
+
+/*
+SDL_Surface *ScaleSurface(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
+{
+    if(!Surface || !Width || !Height)
+        return 0;
+
+    SDL_Surface *_ret = SDL_CreateRGBSurface(Surface->flags, Width, Height, Surface->format->BitsPerPixel,
+        Surface->format->Rmask, Surface->format->Gmask, Surface->format->Bmask, Surface->format->Amask);
+
+    double    _stretch_factor_x = ((double)(Width)  / (double)(Surface->w)),
+        _stretch_factor_y = ((double)(Height) / (double)(Surface->h));
+
+    for(Sint32 y = 0; y < Surface->h; y++)
+        for(Sint32 x = 0; x < Surface->w; x++)
+            for(Sint32 o_y = 0; o_y < _stretch_factor_y; ++o_y)
+                for(Sint32 o_x = 0; o_x < _stretch_factor_x; ++o_x)
+                    putpixel(_ret ,  (int)(_stretch_factor_x * x) + o_x , (int)(_stretch_factor_y * y) + o_y , getpixel(Surface, x, y));
+
+    return _ret;
 }
 */
 int main(int argc, char **argv)
@@ -324,21 +401,25 @@ int main(int argc, char **argv)
         {
                 for (int x = 0; x<w; ++x)
                 {
-			if (get(M, x, y) == 2)
+			if (getcolor(M, x, y) >=8)
 			{
-				Uint32 curpixel = SDL_MapRGB(imageLetters->format, 255, 0, 0);
-				putpixel(imageLetters,x,y,curpixel);
+				Uint32 curpixel = SDL_MapRGB(imageLines->format, 0, 0, 255);
+				putpixel(imageLines,x,y,curpixel);
+				M.M[y*width(M)+x] -= 8;
+				
 			}
-			 else if (get(M, x, y) == 3)
-      {
-        Uint32 curpixel = SDL_MapRGB(imageWords->format, 0, 255, 0);
-        putpixel(imageWords,x,y,curpixel);
-      }
-			 else if (get(M, x, y) == 4)
-      {
-        Uint32 curpixel = SDL_MapRGB(imageLines->format, 0, 0, 255);
-        putpixel(imageLines,x,y,curpixel);
-      }                       
+			if (getcolor(M, x, y) >=4 )
+      			{
+        			Uint32 curpixel = SDL_MapRGB(imageWords->format, 0, 255, 0);
+       	 			putpixel(imageWords,x,y,curpixel);
+				M.M[y*width(M)+x] -=4;
+      			}
+			if (getcolor(M, x, y) >= 2)
+      			{
+        			Uint32 curpixel = SDL_MapRGB(imageLetters->format, 255, 0, 0);
+        			putpixel(imageLetters,x,y,curpixel);
+				M.M[y*width(M)+x] -=2;
+      			}                       
                 }
         }
 	SDL_SaveBMP( imageLines, "imageLines.bmp" );
