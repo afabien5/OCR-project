@@ -4,64 +4,52 @@
 #include <SDL/SDL_image.h>
 #include "pixel_operations.h"
 #include <stdlib.h>
-#include <segmentation.h>
-struct Matrix {
-  int *M;
-  int width;
-  int height;
+#include "segmentation.h"
+
+void do_nothing(struct Matrix M, int x1, int x2, int y1, int y2) {
+  (void)M;
+  (void)x1;
+  (void)x2;
+  (void)y1;
+  (void)y2;
+}
+
+void output_newline(struct Matrix M, int x1, int x2, int y1, int y2) {
+  (void)M;
+  (void)x1;
+  (void)x2;
+  (void)y1;
+  (void)y2;
+	printf("\n");
+}
+
+void output_space(struct Matrix M, int x1, int x2, int y1, int y2) {
+  (void)M;
+  (void)x1;
+  (void)x2;
+  (void)y1;
+  (void)y2;
+        printf(" ");
+}
+
+void dump_matrix(struct Matrix M, int x1, int x2, int y1, int y2) {
+  (void)x1;
+  (void)x2;
+  (void)y1;
+  (void)y2;
+	PrintMatrix(M);
+}
+
+/*Struct qui contient des fonctions et qui sera dans les parametre de ReadTexte et des fonctions que ce dernier appelle.(voir le segmentation.h)
+En gros, par exemple la ca contient output_newline en stop_line(struct M, int x1, int x2, int y1, int y2), comme ca je l appelle à chaque fois que j ai fini de détecter une ligne et ca renvoi à la ligne ds la console.
+Comme ca on peut juste mettre la fn qui prend une Matrice 16*16 et devine la lettre à la place d'un des deux derniers dp_nothing ci dessous (la fonction détecte la lettre et doit la print sans retour à la ligne)*/
+struct Callbacks debug_callbacks = {
+	do_nothing, output_newline,
+	do_nothing, output_space,
+	dump_matrix, do_nothing
 };
 
-int height(struct Matrix M) {
-  return M.height;
-}
-
-int width(struct Matrix M) {
-  return M.width;
-}
-
-int in(struct Matrix M, int x, int y) {
-  return x >= 0 && x < width(M) && y >= 0 && y < height(M);
-}
-
-int get(struct Matrix M, int x, int y) {
-  assert(in(M, x, y));
-  return M.M[y * M.width + x]&1;
-}
-
-int getcolor(struct Matrix M, int x, int y) {
-  assert(in(M, x, y));
-  return M.M[y * M.width + x]&(~1);
-}
-
-void set(struct Matrix M, int x, int y, int value) {
-  assert(in(M, x, y));
-  M.M[y * width(M) + x] = value;
-}
-
-void highlight(struct Matrix M, int x, int y, int n) {
-  assert(in(M, x, y));
-  M.M[y * width(M) + x] |= n;
-}
-
-int is_blank(int value) {
-  return (value & 1) == 0;
-}
-
-double min(double a, double b)
-{
-	return (a<b) ? a : b;
-}
-double max(double a, double b)
-{
-	return (a>b) ? a : b;
-}
-void PrintMatrix(struct Matrix M);
-struct Matrix resize(struct Matrix M, int y1, int y2, int x1, int x2, int newsize);
-void ReadText(struct Matrix M, int spacing);
-void ReadLine(struct Matrix M, int y1, int y2, int spacing);
-void ReadWord(struct Matrix M, int y1 , int y2, int x1, int x2);
-void ShrinkCharacter(struct Matrix M, int y1, int y2, int begin, int end);
-void ChangeMatrix(struct Matrix M, int y1, int y2, int x1, int x2, int n);
+/*Bon là on a tout le SDL en vrac, pas intéressant*/
 
 void wait_for_keypressed(void) {
   SDL_Event             event;
@@ -98,7 +86,6 @@ SDL_Surface* load_image(char *path) {
   return img;
 }
 
-
 SDL_Surface* display_image(SDL_Surface *img) {
   SDL_Surface          *screen;
   // Set the window to the same size as the image
@@ -123,257 +110,16 @@ SDL_Surface* display_image(SDL_Surface *img) {
   return screen;
 }
 
-void ReadText (struct Matrix M, int spacing)
-{
-        for (int y=0; y<height(M) ; ++y)
-        {
-                        int x=0; 
-                        while (x < width(M) && is_blank(get(M, x, y)))
-                        {
-                                x++;
-                        }
-                        if (x<width(M))
-                        {
-                                int y1 = y;
-                                while (++y < height(M))
-                                {
-                                        x = 0;
-                                        while (x < width(M) && is_blank(get(M, x, y)))
-                                        {
-                                                x++;
-                                        }
-                                        if (x == width(M))
-                                                break;
-                                }
-                                int y2 = y;
-                                ReadLine(M, y1, y2-1, spacing);
-				ChangeMatrix(M, y1-3, y2+2, 0, width(M)-1, 8);
-                        }
-        }
-}
+/*on passe au main t'as vu*/
 
-void ReadLine(struct Matrix M, int y1, int y2, int spacing)
-{
-        for (int x = 0; x<width(M) ; ++x)
-        {
-                int y = y1;
-                while (y<y2 && is_blank(get(M, x, y)))
-                        y++;
-                if (y<y2)
-                {
-                        int currentspace = 0;
-                        int x1 = x;
-                        while (++x<width(M))
-                        {
-                                y = y1;
-                                while (y<y2 && is_blank(get(M, x, y)))
-                                        y++;
-                                if (y <y2)
-                                        currentspace = 0;
-                                else    
-                                        ++currentspace; 
-                                if (currentspace == spacing)
-                                        break;
-                        }
-                        int x2 = x-spacing+1; 
-                        ReadWord(M, y1, y2, x1, x2-1);
-			ChangeMatrix(M, y1-2, y2+2, x1-2, x2+1, 4);	
-                }
-        }
-}
-
-void ReadWord(struct Matrix M, int y1, int y2, int x1, int x2)
-{
-        for(int x =x1; x<x2; ++x)
-        {
-                int y = y1;
-                while (y<y2 && is_blank(get(M, x, y)))
-                        y++;
-                if (y<y2)
-                {
-                        int x1 = x;
-                        while (++x<x2)
-                        {
-                                y = y1;
-                                while(y<y2 && is_blank(get(M, x, y)))
-                                        y++;
-                                if (y ==y2)
-                                        break;
-                        }
-                        int x2 = x;
-                        ShrinkCharacter(M, y1,y2,x1,x2-1);
-                }
-        }
-}
-
-void ShrinkCharacter(struct Matrix M, int y1, int y2, int x1, int x2)
-{
-        int x;
-        int y = y1;
-        while (y<y2)
-        {
-                x = x1;
-                while (x <x2 && is_blank(get(M, x, y)))
-                        ++x;
-                if (x<x2)
-                {
-                        y1 = y;
-                        break;
-                }
-                y++;
-
-        }
-        y = y2;
-        while (y>y1)
-        {
-                x = x1;
-                while (x<x2 && is_blank(get(M, x, y)))
-                        ++x;
-                if (x<x2)
-                {
-                        y2 = y;
-                        break;
-                }
-                --y;
-        }
-        x = x1;
-        while (x<x2)
-        {
-                y = y1;
-                while (y<=y2 && is_blank(get(M, x, y)))
-                        ++y;
-                if (y<=y2)
-                {
-                        x1 = x;
-                        break;
-                }
-                ++x;
-        }
-        x = x2;
-        while (x>x1)
-        {
-                y = y1;
-                while(y<=y2 && is_blank(get(M, x, y)))
-                        ++y;
-                if (y<=y2)
-                {
-                        x2 = x;
-                        break;
-                }
-                --x;
-        }
-	ChangeMatrix(M, y1-1, y2+1, x1-1, x2+1, 2);
-	PrintMatrix(resize(M, y1,y2,x1,x2, 16));
-
-}
-
-void ChangeMatrix(struct Matrix M, int y1, int y2, int x1, int x2, int n)
-{
-        int x, y;
-        for (x = x1; x <= x2; ++x) {
-                highlight(M, x, y1, n);
-                highlight(M, x, y2, n);
-        }
-        for (y = y1; y <= y2; ++y) {
-                highlight(M, x1, y, n);
-                highlight(M, x2, y, n);
-        }
-}
-
-void PrintMatrix(struct Matrix M)
-{
-	 for (int i = 0; i<height(M); ++i)
-        {
-                for (int j = 0; j<width(M); ++j)
-                {
-                        printf("%i",get(M, j, i));
-                }
-                printf("\n");
-        }
-
-}
-struct Matrix resize(struct Matrix M,  int y1, int y2, int x1, int x2, int newsize)
-{
-	struct Matrix NewMat;
-	NewMat.width = newsize;
-	NewMat.height = newsize;
-	NewMat.M = calloc(newsize*newsize, sizeof(int));
-	int L = x2-x1+1;
-	int H = y2-y1+1;
-	double leftside;
-	double rightside;
-	double top;
-	double bottom;
-	double A;
-	double A_sum;
-	double A_val;
-	double A_val_sum;
-	double ratio;
-	for (int i = 0; i<newsize; ++i)
-	{
-		for (int j = 0 ; j<newsize; ++j)
-		{	A_sum = 0;
-			A_val_sum = 0;
-			double mapped_left = ((double)(i*L))/newsize;
-			double mapped_right = ((double)((i+1)*L))/newsize;
-			double mapped_top = ((double)(j*H))/newsize;
-			double mapped_bottom = ((double)((j+1)*H))/newsize;
-			for (int k = 0; k <= L; ++k)
-			{
-				for (int l = 0; l<= H; ++l)
-				{	A=0;
-					A_val =0;
-					leftside = max(mapped_left, k);
-					rightside = min(mapped_right,k+1);
-				 	top = max(mapped_top, l);
-					bottom = min(mapped_bottom, l+1);
-					if (leftside<rightside && bottom > top)
-					{
-						A = (rightside - leftside) * (bottom-top);
-						A_val = A * get(M, x1 + k, y1 + l);
-						A_val_sum += A_val;
-						A_sum += A;	
-					}
-				}
-			}
-			ratio = A_val_sum/A_sum;
-			assert(ratio<=1);
-			if (ratio<0.5)
-				set(NewMat, i, j, 0);
-			else
-				set(NewMat, i, j, 1);	
-		}
-	}
-	return NewMat;
-}
-
-/*
-SDL_Surface *ScaleSurface(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
-{
-    if(!Surface || !Width || !Height)
-        return 0;
-
-    SDL_Surface *_ret = SDL_CreateRGBSurface(Surface->flags, Width, Height, Surface->format->BitsPerPixel,
-        Surface->format->Rmask, Surface->format->Gmask, Surface->format->Bmask, Surface->format->Amask);
-
-    double    _stretch_factor_x = ((double)(Width)  / (double)(Surface->w)),
-        _stretch_factor_y = ((double)(Height) / (double)(Surface->h));
-
-    for(Sint32 y = 0; y < Surface->h; y++)
-        for(Sint32 x = 0; x < Surface->w; x++)
-            for(Sint32 o_y = 0; o_y < _stretch_factor_y; ++o_y)
-                for(Sint32 o_x = 0; o_x < _stretch_factor_x; ++o_x)
-                    putpixel(_ret ,  (int)(_stretch_factor_x * x) + o_x , (int)(_stretch_factor_y * y) + o_y , getpixel(Surface, x, y));
-
-    return _ret;
-}
-*/
 int main(int argc, char **argv)
 {
+	/*arg[1] c'est le path pour l'image, l'arg2 c'est le nombre de pixel entre les mots, par exmple 20 en spacing c est bien pour Projet.png*/
         if (argc < 3) {
                 printf("missing argument\n");
                 return 1;
         }
+/*On créé 3 surfaces SDL, meme si la premiere sert un peut à rien, le reste sert à créer les 3 images de segmentation (le nom est assez obvious)*/
         init_sdl();
         SDL_Surface* image = load_image(argv[1]);
 				SDL_Surface* imageLines = load_image(argv[1]);
@@ -385,6 +131,7 @@ int main(int argc, char **argv)
 	printf("%i",w);
 	int Mat[h*w];
         struct Matrix M = { Mat, w, h };
+/*On créé une matrice avec des 0 de la taille de l'image avec 0 comme pixels blancs et 1 pour pixels noirs*/
         for (int y = 0; y< h; ++y)
         {
                 for (int x = 0; x<w; ++x)
@@ -395,38 +142,41 @@ int main(int argc, char **argv)
                         set(M, x, y, (r + g + b < 100) ? 1 : 0);
                 }
         }
-	int spacing = *argv[2];
-	ReadText(M, spacing);
+	int spacing = atoi(argv[2]);
+	ReadText(M, spacing, debug_callbacks); //appel de ReadText, pour suivre, aller dans segmentation.c
+
+/*Ok on a tout parcouru etc. maintenant on veut encadrer dans nos 3 surfaces créées précédemment pour faire joli. Pour cela on a modifié les bits après le 1 ou 0 tt a droite permettant de savoir si le pixel est noir ou blanc. Les int ds la matrices seront donc de la forme 1??? (>=8) si c est un marqueur ligne (bleu), ?1?? (>=4) si marqueur mot (vert) et ??1? (>=2) si marqueur lettre.
+J'ai essayer de pas mettresur les memes cases de la matrice pour eviter de se retrouver avec par exemple 110? qui serait un pixel noir ou blanc (d ou le ?) avec un marqueur bleu et vert, meme si d'apres mon implémentation ca devrait marcher*/ 
 	for (int y = 0; y< h; ++y)
         {
                 for (int x = 0; x<w; ++x)
                 {
-			if (getcolor(M, x, y) >=8)
+			if (getcolor(M, x, y) >=8) //if y a un marqueur ligne (bleu)
 			{
 				Uint32 curpixel = SDL_MapRGB(imageLines->format, 0, 0, 255);
 				putpixel(imageLines,x,y,curpixel);
-				M.M[y*width(M)+x] -= 8;
+				M.M[y*width(M)+x] -= 8; //on enleve 8 pour les prchains if comme ca si on a par exemple 1101, ca devient 0101 et donc on a enlevé le marqueur bleu
 				
 			}
-			if (getcolor(M, x, y) >=4 )
+			if (getcolor(M, x, y) >=4 ) //if y a marqueur mot (vert), on remarque que si y avait un marqueur bleu mais pas vert, le -8 avant rend le nombre <4 et on rentre pas ds le if
       			{
         			Uint32 curpixel = SDL_MapRGB(imageWords->format, 0, 255, 0);
        	 			putpixel(imageWords,x,y,curpixel);
-				M.M[y*width(M)+x] -=4;
+				M.M[y*width(M)+x] -=4;//meme chose on enleve 4, 0101 devient 0001 (plus marqueur vert)
       			}
-			if (getcolor(M, x, y) >= 2)
+			if (getcolor(M, x, y) >= 2)//if marqueur lettre (rouge)
       			{
         			Uint32 curpixel = SDL_MapRGB(imageLetters->format, 255, 0, 0);
         			putpixel(imageLetters,x,y,curpixel);
-				M.M[y*width(M)+x] -=2;
+				M.M[y*width(M)+x] -=2; //pas vraiment utile mais comme ca on revient à un pixel juste blanc ou noir sans marqueur
       			}                       
                 }
         }
 	SDL_SaveBMP( imageLines, "imageLines.bmp" );
-	SDL_SaveBMP( imageWords, "imageWords.bmp" );
+	SDL_SaveBMP( imageWords, "imageWords.bmp" ); //sauvegarde les images
 	SDL_SaveBMP( imageLetters, "imageLetters.bmp" ); 
-  SDL_FreeSurface(imageLines);
-  SDL_FreeSurface(imageWords);
+  SDL_FreeSurface(imageLines); 
+  SDL_FreeSurface(imageWords);//libère les surfaces SDL
   SDL_FreeSurface(imageLetters);
   SDL_FreeSurface(image);
   return 0;

@@ -7,12 +7,14 @@ CFLAGS= -Wall -Wextra -Werror -std=c99 -O0 -g
 LDFLAGS=
 LDLIBS= `pkg-config --libs sdl` -lSDL_image
  
-OBJ= pixel_operations.o main.o
+OBJ= pixel_operations.o main.o segmentation.o
 DEP= ${SRC:.o=.d}
  
 all: main
  
-main: ${OBJ}
+segmentation.c: segmentation.h
+
+main: ${OBJ} segmentation.h
  
 clean:
 	${RM} ${OBJ} ${DEP} *~
